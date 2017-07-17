@@ -9,7 +9,38 @@
 
 namespace Cardcom;
 
+use Exception;
+use const null;
+use function array_merge;
+use function in_array;
 
+/**
+ * get iframe for cardcom api 9
+ *
+ * http://kb.cardcom.co.il/article/AA-00243/0
+ *
+ * Class Iframe
+ * @property string productName
+ * @property int maxNumOfPayments
+ * @property int minNumOfPayments
+ * @property int aPILevel
+ * @property boolean hideCreditCardUserId
+ * @property string successRedirectUrl
+ * @property string errorRedirectUrl
+ * @property string indicatorUrl
+ * @property string cancelUrl
+ * @property int cancelType [0,1,2]
+ * @property int sumInStars
+ * @property boolean hideCVV
+ * @property int creditType
+ * @property int returnValue
+ * @property int defaultNumOfPayments
+ * @property string hideCardOwnerName
+ * @property int sapakMutav
+ * @property int coinID
+ * @property string language
+ * @package Cardcom
+ */
 class Iframe
 {
 
@@ -20,7 +51,10 @@ class Iframe
 		"ChargeInfo.CoinID" => "1",
 		"ChargeInfo.Language" => "he"
 	];
-	private $goodUrl;
+	/**
+	 * @var Invoice
+	 */
+	private $invoice = null;
 
 
 	function __construct()
@@ -50,30 +84,30 @@ class Iframe
 
 	public function getIframe()
 	{
-		$data = array(
-			'username' => Setting::getUser(),
-//			'password' => Setting::getPassword(),
-			'terminalnumber' => Setting::getTerminal(),
-//			"NotificationGoodMail" => Setting::getSendToMail(),
-//			"NotificationErrorMail" => Setting::getSendToMail(),
-//			"NotificationFailMail" => Setting::getSendToMail(),
 
-		);
-
-//		if(Setting::getPassword()){
-//			$data["pa"]
-//		}
-
-		$setting = $this->setting;
-
-		foreach ($setting as $key => $value) {
-			$data[$key] = $value;
-		}
-
-		return $this->postVars($data);
+		return $this->postVars($this->getSetting());
 
 
 	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getInvoice()
+	{
+		return $this->invoice;
+	}
+
+	/**
+	 * @param Invoice $invoice
+	 * @return $this
+	 */
+	public function setInvoice(Invoice $invoice)
+	{
+		$this->invoice = $invoice;
+		return $this;
+	}
+
 
 	private function postVars($vars)
 	{
@@ -124,8 +158,6 @@ class Iframe
 		$this->setting["ChargeInfo.IndicatorUrl"] = $indicatorUrl;
 		return $this;
 	}
-	//$vars['ChargeInfo.ErrorRedirectUrl'] = "https://secure.Cardcom.co.il/DealWasUnSuccessful.aspx?customVar=1234"; // Error Page
-//$vars['ChargeInfo.IndicatorUrl'] = "http://www.yoursite.com/NotifyURL"; // Indicator Url \ Notify URL
 
 	/**
 	 * @param null $price
@@ -153,9 +185,35 @@ class Iframe
 	/**
 	 * @return array
 	 */
-	public function getSetting(): array
+	public function getSetting()
 	{
-		return $this->setting;
+		$data = array(
+			'username' => Setting::getUser(),
+			'terminalnumber' => Setting::getTerminal(),
+
+		);
+
+		$setting = $this->setting;
+
+		foreach ($setting as $key => $value) {
+			$data[$key] = $value;
+		}
+
+		if ($this->invoice) {
+			$settingInvoice = $this->invoice->render();
+			$data = array_merge($data, $settingInvoice);
+		}
+		return $data;
+	}
+
+	function __set($name, $value)
+	{
+		if (in_array($name, ['productName', 'maxNumOfPayments', 'aPILevel', 'minNumOfPayments', 'hideCreditCardUserId', 'successRedirectUrl', 'errorRedirectUrl', 'indicatorUrl', 'cancelUrl', 'cancelType', 'sumInStars', 'hideCVV', 'creditType', 'returnValue', 'defaultNumOfPayments', 'hideCardOwnerName', 'sapakMutav', 'coinID', 'language'])) {
+			$this->setting["ChargeInfo." . ucfirst($name)] = $value;
+		} else {
+			throw new Exception("not valid attribute");
+		}
+
 	}
 
 }

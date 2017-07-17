@@ -16,6 +16,14 @@ class Setting
 	static private $terminal = null;
 	static private $sendToMail = null;
 
+	const COIN_SHEKEL = 1;
+	const COIN_DOLLAR = 2;
+
+	const LANG_HEBREW = "he";
+	const LANG_ENGLISH = "en";
+	const LANG_RUSSIAN = "ru";
+	const LANG_ARABIC = "ar";
+
 
 	/**
 	 * @return array
