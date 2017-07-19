@@ -12,6 +12,48 @@ namespace Cardcom;
  *
  * http://kb.cardcom.co.il/article/AA-00241/0
  *
+ * @property string responseCode
+ * @property string description
+ * @property string terminalnumber
+ * @property string lowprofilecode
+ * @property string operation
+ * @property string prossesEndOK
+ * @property string dealRespone
+ * @property string dealResponse
+ * @property string internalDealNumber
+ * @property string cardValidityYear
+ * @property string cardValidityMonth
+ * @property string cardOwnerID
+ * @property string numOfPayments
+ * @property string callIndicatorResponse
+ * @property string extShvaParams_CardNumber5
+ * @property string extShvaParams_Status1
+ * @property string extShvaParams_Sulac25
+ * @property string extShvaParams_JParameter29
+ * @property string extShvaParams_Tokef30
+ * @property string extShvaParams_Sum36
+ * @property string extShvaParams_SumStars52
+ * @property string extShvaParams_FirstPaymentSum78
+ * @property string extShvaParams_ConstPayment86
+ * @property string extShvaParams_NumberOfPayments94
+ * @property string extShvaParams_AbroadCard119
+ * @property string extShvaParams_CardTypeCode60
+ * @property string extShvaParams_Mutag24
+ * @property string extShvaParams_CardOwnerName
+ * @property string extShvaParams_CardHolderIdentityNumber
+ * @property string extShvaParams_CreditType63
+ * @property string extShvaParams_DealType61
+ * @property string extShvaParams_ChargType66
+ * @property string extShvaParams_TerminalNumber
+ * @property string extShvaParams_BinId
+ * @property string cardOwnerEmail
+ * @property string cardOwnerName
+ * @property string cardOwnerPhone
+ * @property string returnValue
+ * @property string coinId
+ * @property string operationResponse
+ * @property string operationResponseText
+ *
  * Class DealResponse
  * @package Cardcom
  */
@@ -70,6 +112,16 @@ class DealResponse
 	public function getStrResponse()
 	{
 		return $this->strResponse;
+	}
+
+	function __get($name)
+	{
+		if (in_array($name, ['productName', 'maxNumOfPayments', 'aPILevel', 'minNumOfPayments', 'hideCreditCardUserId', 'successRedirectUrl', 'errorRedirectUrl', 'indicatorUrl', 'cancelUrl', 'cancelType', 'sumInStars', 'hideCVV', 'creditType', 'returnValue', 'defaultNumOfPayments', 'hideCardOwnerName', 'sapakMutav', 'coinID', 'language'])) {
+			return $this->response[ucfirst($name)];
+		} else {
+			throw new \Exception("not valid attribute");
+		}
+
 	}
 
 }
