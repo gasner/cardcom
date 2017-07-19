@@ -29,7 +29,7 @@ $iframe->setPrice(360);
 $iframe->setInvoice($invoice);
 
 //$iframe->setGoodUrl("http://secure.Cardcom.co.il/DealWasSuccessful.aspx");
-$iframe->setGoodUrl("http://http://cardcom.try/response.php");
+$iframe->setGoodUrl("http://cardcom.try/response2.php");
 
 var_dump($iframe->getSetting());
 $result = $iframe->getIframe();
