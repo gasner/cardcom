@@ -29,6 +29,7 @@ use const true;
  * @property string date
  * @property string departmentId
  * @property string siteUniqueId
+ * @property string invoiceType
  * @package Cardcom
  */
 class Invoice
@@ -92,8 +93,8 @@ class Invoice
 
 	function __set($name, $value)
 	{
-		if (in_array($name, [['custAddresLine1', 'custAddresLine2', 'custCity', 'custLinePH', 'custMobilePH', 'compID', 'comments', 'coinID', 'extIsVatFree', 'manualInvoiceNumber', 'isAutoCreateUpdateAccount', 'accountForeignKey', 'date', 'departmentId', 'siteUniqueId']])) {
-			$this->setting["ChargeInfo." . ucfirst($name)] = $value;
+		if (in_array($name, [['invoiceType', 'custAddresLine1', 'custAddresLine2', 'custCity', 'custLinePH', 'custMobilePH', 'compID', 'comments', 'coinID', 'extIsVatFree', 'manualInvoiceNumber', 'isAutoCreateUpdateAccount', 'accountForeignKey', 'date', 'departmentId', 'siteUniqueId']])) {
+			$this->setting["InvoiceHead." . ucfirst($name)] = $value;
 		} else {
 			throw new \Exception("not valid attribute");
 		}
