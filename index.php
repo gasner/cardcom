@@ -20,16 +20,17 @@ Setting::setUser("barak9611");
 
 
 $invoice = new Invoice("elad gasner", "elad@closeapp.co.il");
-$product = new InvoiceProduct("מעיל", 90, 2);
-$product2 = new InvoiceProduct("מעיל רוח", 90, 2);
+$product = new InvoiceProduct("מעיל", 5, 1);
+$product2 = new InvoiceProduct("מעיל רוח", 5, 2);
 $invoice->setProducts([$product, $product2]);
 
 $iframe = new Iframe();
-$iframe->setPrice(360);
+$iframe->setPrice(15);
 $iframe->setInvoice($invoice);
-
+$iframe->docTypeToCreate = 400;
 //$iframe->setGoodUrl("http://secure.Cardcom.co.il/DealWasSuccessful.aspx");
 $iframe->setGoodUrl("http://cardcom.try/response2.php");
+$iframe->setErrorUrl("http://cardcom.try/error.php");
 
 var_dump($iframe->getSetting());
 $result = $iframe->getIframe();

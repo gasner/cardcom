@@ -9,7 +9,6 @@
 
 namespace Cardcom;
 
-use Exception;
 use const null;
 use function array_merge;
 use function in_array;
@@ -23,7 +22,7 @@ use function in_array;
  * @property string productName
  * @property int maxNumOfPayments
  * @property int minNumOfPayments
- * @property int aPILevel
+ * @property int APILevel
  * @property boolean hideCreditCardUserId
  * @property string successRedirectUrl
  * @property string errorRedirectUrl
@@ -34,22 +33,42 @@ use function in_array;
  * @property boolean hideCVV
  * @property int creditType
  * @property int returnValue
+ * @property int docTypeToCreate
  * @property int defaultNumOfPayments
  * @property string hideCardOwnerName
  * @property int sapakMutav
  * @property int coinID
  * @property string language
+ * @property string cardOwnerName
+ * @property string refundDeal
+ * @property string showCardOwnerPhone
+ * @property string cardOwnerPhone
+ * @property string reqCardOwnerPhone
+ * @property string cardOwnerEmail
+ * @property string showCardOwnerEmail
+ * @property string reqCardOwnerEmail
+ * @property string showInvoiceHead
+ * @property string autoRedirect
+ * @property string invoiceHeadOperation
+ * @property string isVirtualTerminalMode
+ * @property string CSSUrl
  * @package Cardcom
  */
 class Iframe
 {
 
+	const OPERATION_BILL = 1;
+	const OPERATION_BILL_AND_TOKEN = 2;
+	const OPERATION_TOKEN = 3;
+	const OPERATION_SUSPENDED_DEAL = 4;
+
 	private $setting = [];
 	static private $defaultSetting = [
 		"codepage" => '65001',
-		"ChargeInfo.APILevel" => "9",
-		"ChargeInfo.CoinID" => "1",
-		"ChargeInfo.Language" => "he"
+		"APILevel" => "10",
+		"CoinID" => "1",
+		"Language" => "he",
+		"Operation" => "1"
 	];
 	/**
 	 * @var Invoice
@@ -84,10 +103,7 @@ class Iframe
 
 	public function getIframe()
 	{
-
 		return $this->postVars($this->getSetting());
-
-
 	}
 
 	/**
@@ -114,7 +130,7 @@ class Iframe
 		$urlencoded = http_build_query($vars);
 
 		$CR = curl_init();
-		curl_setopt($CR, CURLOPT_URL, 'https://secure.Cardcom.co.il/interface/PerformSimpleCharge.aspx');
+		curl_setopt($CR, CURLOPT_URL, 'https://secure.cardcom.co.il/Interface/LowProfile.aspx');
 		curl_setopt($CR, CURLOPT_POST, 1);
 		curl_setopt($CR, CURLOPT_FAILONERROR, true);
 		curl_setopt($CR, CURLOPT_POSTFIELDS, $urlencoded);
@@ -129,6 +145,8 @@ class Iframe
 			throw new \Exception($error);
 		}
 		curl_close($CR);
+//		var_dump($r);
+//		die;
 		parse_str($r, $result); # parse result.
 		return new IframeResponse($result);
 
@@ -140,22 +158,28 @@ class Iframe
 	 */
 	public function setGoodUrl($goodUrl)
 	{
-		$this->setting["ChargeInfo.SuccessRedirectUrl"] = $goodUrl;
-		if (empty($this->setting["ChargeInfo.ErrorRedirectUrl"])) {
+		$this->setting["SuccessRedirectUrl"] = $goodUrl;
+		if (empty($this->setting["ErrorRedirectUrl"])) {
 			$this->setErrorUrl($goodUrl);
 		}
 		return $this;
 	}
 
+	public function setOperation($operation)
+	{
+		$this->setting["Operation"] = $operation;
+		return $this;
+	}
+
 	public function setErrorUrl($errorUrl)
 	{
-		$this->setting["ChargeInfo.ErrorRedirectUrl"] = $errorUrl;
+		$this->setting["ErrorRedirectUrl"] = $errorUrl;
 		return $this;
 	}
 
 	public function setIndicatorUrl($indicatorUrl)
 	{
-		$this->setting["ChargeInfo.IndicatorUrl"] = $indicatorUrl;
+		$this->setting["IndicatorUrl"] = $indicatorUrl;
 		return $this;
 	}
 
@@ -165,7 +189,7 @@ class Iframe
 	 */
 	public function setPrice($price)
 	{
-		$this->setting["ChargeInfo.SumToBill"] = $price;
+		$this->setting["SumToBill"] = $price;
 		return $this;
 	}
 
@@ -188,9 +212,8 @@ class Iframe
 	public function getSetting()
 	{
 		$data = array(
-			'username' => Setting::getUser(),
-			'terminalnumber' => Setting::getTerminal(),
-
+			'UserName' => Setting::getUser(),
+			'TerminalNumber' => Setting::getTerminal()
 		);
 
 		$setting = $this->setting;
@@ -200,6 +223,7 @@ class Iframe
 		}
 
 		if ($this->invoice) {
+			$data['IsCreateInvoice'] = "true";
 			$settingInvoice = $this->invoice->render();
 			$data = array_merge($data, $settingInvoice);
 		}
@@ -208,10 +232,14 @@ class Iframe
 
 	function __set($name, $value)
 	{
-		if (in_array($name, ['productName', 'maxNumOfPayments', 'aPILevel', 'minNumOfPayments', 'hideCreditCardUserId', 'successRedirectUrl', 'errorRedirectUrl', 'indicatorUrl', 'cancelUrl', 'cancelType', 'sumInStars', 'hideCVV', 'creditType', 'returnValue', 'defaultNumOfPayments', 'hideCardOwnerName', 'sapakMutav', 'coinID', 'language'])) {
-			$this->setting["ChargeInfo." . ucfirst($name)] = $value;
+		if (in_array($name, ["docTypeToCreate", 'productName', 'maxNumOfPayments', 'APILevel', 'minNumOfPayments', 'hideCreditCardUserId', 'successRedirectUrl',
+			'errorRedirectUrl', 'indicatorUrl', 'cancelUrl', 'cancelType', 'sumInStars', 'hideCVV', 'creditType', 'returnValue', 'defaultNumOfPayments',
+			'hideCardOwnerName', 'sapakMutav', 'coinID', 'language', "", "", "", "", "", "", "",
+			"", "", "", "", "", ""
+		])) {
+			$this->setting[ucfirst($name)] = $value;
 		} else {
-			throw new Exception("not valid attribute");
+			$this->setting[$name] = $value;
 		}
 
 	}

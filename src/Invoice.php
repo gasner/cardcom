@@ -84,6 +84,19 @@ class Invoice
 	}
 
 	/**
+	 * set free parameter
+	 *
+	 * @param $name
+	 * @param $value
+	 * @return $this
+	 */
+	public function setParameter($name, $value)
+	{
+		$this->setting[$name] = $value;
+		return $this;
+	}
+
+	/**
 	 * @return array
 	 */
 	public function getSetting(): array
@@ -93,10 +106,10 @@ class Invoice
 
 	function __set($name, $value)
 	{
-		if (in_array($name, [['invoiceType', 'custAddresLine1', 'custAddresLine2', 'custCity', 'custLinePH', 'custMobilePH', 'compID', 'comments', 'coinID', 'extIsVatFree', 'manualInvoiceNumber', 'isAutoCreateUpdateAccount', 'accountForeignKey', 'date', 'departmentId', 'siteUniqueId']])) {
+		if (in_array($name, ['custAddresLine1', 'custAddresLine2', 'custCity', 'custLinePH', 'custMobilePH', 'compID', 'comments', 'coinID', 'extIsVatFree', 'manualInvoiceNumber', 'isAutoCreateUpdateAccount', 'accountForeignKey', 'date', 'departmentId', 'siteUniqueId'])) {
 			$this->setting["InvoiceHead." . ucfirst($name)] = $value;
 		} else {
-			throw new \Exception("not valid attribute");
+			$this->setParameter($name, $value);
 		}
 
 	}
