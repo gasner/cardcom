@@ -7,6 +7,9 @@
  */
 
 namespace Cardcom;
+use Exception;
+use function json_decode;
+use function json_encode;
 
 /**
  *
@@ -53,6 +56,8 @@ namespace Cardcom;
  * @property string coinId
  * @property string operationResponse
  * @property string operationResponseText
+ * @property string invoiceNumber
+ * @property string invoiceType
  *
  * Class DealResponse
  * @package Cardcom
@@ -70,6 +75,11 @@ class DealResponse
 		parse_str($response, $this->response);
 	}
 
+	/**
+	 * @param $dealCode
+	 * @return DealResponse
+	 * @throws Exception
+	 */
 	static public function getDealResponse($dealCode)
 	{
 		$urlencoded = http_build_query([
@@ -91,7 +101,7 @@ class DealResponse
 		$error = curl_error($CR);
 		# some error , send email to developer
 		if (!empty($error)) {
-			throw new \Exception($error);
+			throw new Exception($error);
 		}
 		curl_close($CR);
 //		parse_str($r, $result); # parse result.
@@ -114,12 +124,119 @@ class DealResponse
 		return $this->strResponse;
 	}
 
+
+	/**
+	 * @return \stdClass
+	 * @throws Exception
+	 */
+	public function sendInvoiceToCustomer(){
+		if(!$this->cardOwnerEmail){
+			throw new Exception("cardOwnerEmail is NULL");
+		}
+		return $this->sendInvoiceToMail($this->cardOwnerEmail);
+	}
+
+	/**
+	 * @param $email
+	 * @return \stdClass
+	 * @throws Exception
+	 */
+	public function sendInvoiceToMail($email){
+
+		if(!$this->invoiceNumber){
+			throw new Exception("invoiceNumber is NULL");
+		}
+
+		$curl = curl_init();
+		$urlencoded = http_build_query([
+			"codepage" => 65001,
+			'username' => Setting::getUser(),
+			"UserPassword" => Setting::getPassword(),
+			"InvoiceNumber" => $this->invoiceNumber,
+			"InvoiceType" => $this->invoiceType,
+			"EmailAddress" => $email
+		]);
+		curl_setopt_array($curl, array(
+			CURLOPT_URL => "https://secure.cardcom.solutions/Interface/SendInvoiceCopy.aspx" . $urlencoded,
+			CURLOPT_RETURNTRANSFER => true,
+			CURLOPT_ENCODING => "",
+			CURLOPT_MAXREDIRS => 10,
+			CURLOPT_TIMEOUT => 30,
+			CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+			CURLOPT_CUSTOMREQUEST => "GET",
+			CURLOPT_HTTPHEADER => array(
+				"Cache-Control: no-cache",
+			),
+		));
+		$response = curl_exec($curl);
+		$err = curl_error($curl);
+
+		curl_close($curl);
+
+		if ($err) {
+			throw new Exception($err);
+		} else {
+			return json_decode($response);
+		}
+	}
+
+	/**
+	 * @param $name
+	 * @return mixed
+	 * @throws Exception
+	 */
 	function __get($name)
 	{
-		if (in_array($name, ['productName', 'maxNumOfPayments', 'aPILevel', 'minNumOfPayments', 'hideCreditCardUserId', 'successRedirectUrl', 'errorRedirectUrl', 'indicatorUrl', 'cancelUrl', 'cancelType', 'sumInStars', 'hideCVV', 'creditType', 'returnValue', 'defaultNumOfPayments', 'hideCardOwnerName', 'sapakMutav', 'coinID', 'language'])) {
+		if (in_array($name, [
+			'responseCode',
+			'description',
+			'terminalnumber',
+			'lowprofilecode',
+			'operation',
+			'prossesEndOK',
+			"dealResponse",
+			"internalDealNumber",
+			"cardValidityYear",
+			"cardValidityMonth",
+			"cardOwnerID",
+			"numOfPayments",
+			"invoiceResponseCode",
+			"invoiceNumber",
+			"invoiceType",
+			"extShvaParams_CardNumber5",
+			"extShvaParams_Status1",
+			"extShvaParams_Sulac25",
+			"extShvaParams_JParameter29",
+			"extShvaParams_Tokef30",
+			"extShvaParams_Sum36",
+			"extShvaParams_SumStars52",
+			"extShvaParams_ApprovalNumber71",
+			"extShvaParams_FirstPaymentSum78",
+			"extShvaParams_ConstPayment86",
+			"extShvaParams_NumberOfPayments94",
+			"extShvaParams_AbroadCard119",
+			"extShvaParams_CardTypeCode60",
+			"extShvaParams_Mutag24",
+			"extShvaParams_CardOwnerName",
+			"extShvaParams_CardToken",
+			"extShvaParams_CardHolderIdentityNumber",
+			"extShvaParams_CreditType63",
+			"extShvaParams_DealType61",
+			"extShvaParams_ChargType66",
+			"extShvaParams_TerminalNumber",
+			"extShvaParams_BinId",
+			"extShvaParams_InternalDealNumber",
+			"extShvaParams_CouponNumber",
+			"cardOwnerEmail",
+			"cardOwnerName",
+			"cardOwnerPhone",
+			"ReturnValue",
+			"coinId",
+			"operationResponse",
+			"operationResponseText"])) {
 			return $this->response[ucfirst($name)];
 		} else {
-			throw new \Exception("not valid attribute");
+			throw new Exception("not valid attribute");
 		}
 
 	}

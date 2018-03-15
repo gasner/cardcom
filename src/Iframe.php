@@ -234,14 +234,11 @@ class Iframe
 	{
 		if (in_array($name, ["docTypeToCreate", 'productName', 'maxNumOfPayments', 'APILevel', 'minNumOfPayments', 'hideCreditCardUserId', 'successRedirectUrl',
 			'errorRedirectUrl', 'indicatorUrl', 'cancelUrl', 'cancelType', 'sumInStars', 'hideCVV', 'creditType', 'returnValue', 'defaultNumOfPayments',
-			'hideCardOwnerName', 'sapakMutav', 'coinID', 'language', "", "", "", "", "", "", "",
-			"", "", "", "", "", ""
-		])) {
+			'hideCardOwnerName', 'sapakMutav', 'coinID', 'language'])) {
 			$this->setting[ucfirst($name)] = $value;
 		} else {
 			$this->setting[$name] = $value;
 		}
-
 	}
 
 }
