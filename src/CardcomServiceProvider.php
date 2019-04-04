@@ -1,8 +1,7 @@
 <?php
 
-namespace App\Providers;
+namespace Cardcom;
 
-use Cardcom\Setting;
 use Illuminate\Support\ServiceProvider;
 
 class CardcomServiceProvider extends ServiceProvider
