@@ -26,7 +26,7 @@ Setting::setTerminal(<yourTrminal>);
 Setting::setUser(<yourUser>);
 ```
 
-####Create iframe
+#### Create iframe
 ```php
 $iframe = new Iframe();
 $iframe->setPrice(15);
@@ -36,7 +36,7 @@ $iframe->setGoodUrl("http://cardcom.try/response2.php");
 $iframe->setErrorUrl("http://cardcom.try/error.php");
 ```
 
-####Create invoice
+#### Create invoice
 ```php
 $invoice = new Invoice("elad gasner", "elad@closeapp.co.il");
 $product = new InvoiceProduct("מעיל", 5, 1);
@@ -45,7 +45,7 @@ $invoice->setProducts([$product, $product2]);
 $iframe->setInvoice($invoice);
 ```
 
-####Get iframe link
+#### Get iframe link
 ```php
 $iframe = new Iframe();
 $iframe->setPrice(15);
