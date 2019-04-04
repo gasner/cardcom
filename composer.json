@@ -18,6 +18,13 @@
 	  "Cardcom\\": "src"
 	}
   },
-  "description": "Cardcom iframe php package"
+  "description": "Cardcom iframe php package",
+  "extra": {
+	"laravel": {
+	  "providers": [
+		"Cardcom\\CardcomServiceProvider"
+	  ]
+	}
+  }
 }
 
