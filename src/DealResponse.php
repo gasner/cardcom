@@ -7,9 +7,10 @@
  */
 
 namespace Cardcom;
+
 use Exception;
 use function json_decode;
-use function json_encode;
+use function ucfirst;
 
 /**
  *
@@ -129,8 +130,9 @@ class DealResponse
 	 * @return \stdClass
 	 * @throws Exception
 	 */
-	public function sendInvoiceToCustomer(){
-		if(!$this->cardOwnerEmail){
+	public function sendInvoiceToCustomer()
+	{
+		if (!$this->cardOwnerEmail) {
 			throw new Exception("cardOwnerEmail is NULL");
 		}
 		return $this->sendInvoiceToMail($this->cardOwnerEmail);
@@ -141,9 +143,10 @@ class DealResponse
 	 * @return \stdClass
 	 * @throws Exception
 	 */
-	public function sendInvoiceToMail($email){
+	public function sendInvoiceToMail($email)
+	{
 
-		if(!$this->invoiceNumber){
+		if (!$this->invoiceNumber) {
 			throw new Exception("invoiceNumber is NULL");
 		}
 
@@ -233,8 +236,12 @@ class DealResponse
 			"ReturnValue",
 			"coinId",
 			"operationResponse",
-			"operationResponseText"])) {
-			return $this->response[ucfirst($name)];
+			"operationResponseText"
+		])) {
+			if (isset($this->response[ucfirst($name)])) {
+				return $this->response[ucfirst($name)];
+			}
+			return null;
 		} else {
 			throw new Exception("not valid attribute");
 		}

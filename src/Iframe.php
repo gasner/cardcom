@@ -200,7 +200,6 @@ class Iframe
 	public function setSetting(array $settings)
 	{
 		foreach ($settings as $key => $setting) {
-
 			$this->setting[$key] = $setting;
 		}
 		return $this;
